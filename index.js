@@ -1,18 +1,18 @@
 'use strict';
 
-var Twit = require( 'twit' );
-var Canvas = require( 'canvas' );
-var GIFEncoder = require('gifencoder');
+const Twit = require( 'twit' );
+const Canvas = require( 'canvas' );
+const GIFEncoder = require('gifencoder');
 
-var Mondrian = require( './mondrian' );
-var Tweeter = require( './tweeter' );
+const Mondrian = require( './mondrian' );
+const Tweeter = require( './tweeter' );
 
-var config = require( './config' );
+const config = require( './config' );
 
 const width = 880;
 const height = 440;
 const borderSize = 4;
-var filename = 'temp.gif';
+const filename = 'temp.gif';
 
 let t = new Twit({
 	consumer_key: config.consumer_key,
@@ -22,7 +22,7 @@ let t = new Twit({
 });
 
 
-let tweet = function () {
+function tweet () {
 
 	let canvas = new Canvas( width, height )
 	let context = canvas.getContext( '2d' );
@@ -48,15 +48,8 @@ let tweet = function () {
 		} );
 
 		tweeter.tweet();
-
 	} );
-
-
-
-};
+}
 
 tweet();
-
-
-
 
