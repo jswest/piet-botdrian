@@ -56,6 +56,9 @@ let tweet = function () {
 };
 
 tweet();
+setInterval( () => {
+	tweet();
+}, 14400 * 1000 );
 
 
 
