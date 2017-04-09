@@ -1,9 +1,9 @@
 'use strict';
 
-var fs = require( 'fs' );
-var _ = require( 'underscore' );
+let fs = require( 'fs' );
+let _ = require( 'underscore' );
 
-var Region = require( './region' );
+let Region = require( './region' );
 
 class Mondrian {
 
@@ -11,7 +11,7 @@ class Mondrian {
 
 	constructor ( options ) {
 
-		var options = options || {};
+		options = options || {};
 
 		this.width = options.width || 440; // PX
 		this.height = options.height || 220; // PX
@@ -45,14 +45,6 @@ class Mondrian {
 			black: '#000000'
 		};
 
-		this.reverseColors = {
-			'#ffffff': 'white',
-			'#0028f9': 'blue',
-			'#e02727': 'red',
-			'#fffa28': 'yellow',
-			'#000000': 'black'
-		};
-
 		this.primaries = [ 'blue', 'red', 'yellow' ];
 
 		this.usedColors = [];
@@ -65,13 +57,13 @@ class Mondrian {
 
 		let rando = Math.random()
 
-		if ( rando > 1 ) {
+		if ( rando > 1 ) { // This is impossible
 			this.directionHinge = this.originalDirectionHinge;
 			return 'horizontal';
-		} else if ( rando < 0 ) {
+		} else if ( rando < 0 ) { // This is impossible
 			this.directionHinge = this.originalDirectionHinge;
 			return 'vertical';
-		} else if ( rando > this.directionHinge && rando < 1 ) {
+		} else if ( rando > this.directionHinge ) {
 			this.directionHinge += this.directionHingeIncriment;
 			return 'horizontal';
 		} else {
@@ -86,9 +78,10 @@ class Mondrian {
 
 		if ( depth < this.depth ) {
 
+      // This is confusing, I would instead do the incrementing when calling.
 			depth++;
 
-			for ( let i = 0, l = regions.length; i < l; i++ ) {
+			for ( let i = 0; i < regions.length; i++ ) {
 
 				let direction = depth === 0 ? 'vertical' : this.getDirection();
 
@@ -98,10 +91,10 @@ class Mondrian {
 					regions[i].split( direction );
 				}
 
-				this.borders = this.borders.concat( regions[i].borders );
+				this.borders = [ ...this.borders, ...regions[i].borders ];
 
 				if ( depth === this.depth ) {
-					this.bottomRegions = this.bottomRegions.concat( regions[i].subregions );
+					this.bottomRegions = [ ...this.bottomRegions, ...regions[i].subregions ];
 				}
 
 				this.split( depth, regions[i].subregions );
@@ -115,7 +108,7 @@ class Mondrian {
 
 	createRegions () {
 
-		var base = new Region( {
+		const base = new Region( {
 			width: this.width,
 			height: this.height,
 			borderSize: this.borderSize,
@@ -148,16 +141,15 @@ class Mondrian {
 
 		this.usedColors = [];
 
-		for ( let i = 0, l = regions.length; i < l; i++ ) {
+		for ( let i = 0; i < regions.length; i++ ) {
 			let region = regions[i];
 			let rando = Math.random();
-			let color = rando > 0.75 ? this.colors[this.primaries[Math.floor( Math.random() * this.primaries.length )]] : this.colors.white;
-			context.fillStyle = color;
+			let color = rando > 0.75 ? _.sample(_.keys(this.colors)) : 'white';
+			context.fillStyle = this.colors[color];
 			context.fillRect( region.left, region.top, region.width, region.height );
-			if ( color !== this.colors.white ) {
-				let usedColor = this.reverseColors[color];
-				if ( this.usedColors.indexOf( usedColor ) === -1 ) {
-					this.usedColors.push( usedColor );
+			if ( color !== 'white' ) {
+				if ( this.usedColors.indexOf( color ) === -1 ) {
+					this.usedColors.push( color );
 				}
 				encoder.addFrame( context );
 			}
@@ -165,7 +157,7 @@ class Mondrian {
 
 
 
-		for ( let i = 0, l = borders.length; i < l; i++ ) {
+		for ( let i = 0; i < borders.length; i++ ) {
 			let border = borders[i];
 			context.fillStyle = this.colors.black;
 			context.fillRect( border.left, border.top, border.width, border.height );
@@ -193,32 +185,21 @@ class Mondrian {
 
 	getMeta () {
 
-		var title = 'Composition';
-		var number = ( Math.round( Math.random() * 10000 ) + 100 ) / 100;
-
+    let colors;
 		if ( this.usedColors.length === 1 ) {
 
-			title += ' with ' + this.usedColors[0];
+			colors = this.usedColors[0];
 
 		} else if ( this.usedColors.length > 1 ) {
 
-			title += ' with';
-
-			for ( let i = 0, l = this.usedColors.length; i < l; i++ ) {
-				if ( i === this.usedColors.length - 2 ) {
-					title += ' ' + this.usedColors[i] + ' and';
-				} else if ( i === this.usedColors.length - 1 ) {
-					title += ' ' + this.usedColors[i];
-				} else {
-					title += ' ' + this.usedColors[i] + ',';
-				}
-			}
+      colors = `${this.usedColors.slice(0, -1).join(', ')} and ${this.usedColors.slice(-1)[0]}`;
 
 		}
 
-		title += ', number ' + number + '.';
+		const number = ( Math.round( Math.random() * 10000 ) + 100 ) / 100;
+    const title = `Composition with ${colors}, number ${number}.`
 
-		let status = title + '\n\nPixels on screen.';
+		let status = `${title}\n\nPixels on screen.`;
 
 		return { title: title, status: status };
 

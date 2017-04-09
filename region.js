@@ -19,8 +19,6 @@ class Region {
 		// Holds any border lines that will be in this region.
 		this.borders = [];
 
-
-
 		// The padding--left and right--before we allow splits.
 		this.splitPadding = 0.25; // Convert percent -> decimal.
 
