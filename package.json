@@ -4,9 +4,9 @@
   "description": "Algorithm-generated Mondrian-esque images, one tweet at a time.",
   "main": "index.js",
   "author": "John West",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "canvas": "^1.4.0",
+    "canvas": "^2.0.0-alpha.12",
     "gifencoder": "^1.0.6",
     "twit": "^2.2.4",
     "underscore": "^1.8.3"
